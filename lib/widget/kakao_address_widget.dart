@@ -28,10 +28,10 @@ class _KakaoAddressWidgetState extends State<KakaoAddressWidget> {
     super.initState();
     // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
-      'div-layer',
+      'div-kpostal_layer',
       (int viewId) {
         final divElement = html.DivElement();
-        divElement.id = 'layer';
+        divElement.id = 'kpostal_layer';
         divElement.style.display = 'none';
         divElement.style.position = 'fixed';
         divElement.style.overflow = 'hidden';
@@ -66,7 +66,7 @@ class _KakaoAddressWidgetState extends State<KakaoAddressWidget> {
       } catch (e) {}
       const jsCode = r'''
     // 우편번호 찾기 화면을 넣을 element
-    var element_layer = document.getElementById('layer');
+    var element_layer = document.getElementById('kpostal_layer');
     function sample2_execDaumPostcode() {
         new daum.Postcode({
             oncomplete: function(data) {
@@ -88,7 +88,7 @@ class _KakaoAddressWidgetState extends State<KakaoAddressWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return const HtmlElementView(viewType: 'div-layer');
+    return const HtmlElementView(viewType: 'div-kpostal_layer');
   }
 
   void onComplete(dynamic data) {
