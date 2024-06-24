@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:html' as html;
 import 'dart:ui' as ui;
 
@@ -8,50 +9,55 @@ import 'package:kpostal_web/util/js_util.dart';
 import 'package:uuid/v1.dart';
 import 'package:uuid/v4.dart';
 
-class KakaoAddressWidget extends StatelessWidget {
+class KakaoAddressWidget extends StatefulWidget {
   final ValueChanged<KakaoAddress> onComplete;
   final VoidCallback onClose;
-  html.DivElement? divElement;
-  bool isFirst = true;
 
-  KakaoAddressWidget({
+  const KakaoAddressWidget({
     super.key,
     required this.onComplete,
     required this.onClose,
   });
 
   @override
-  Widget build(BuildContext context) {
-    if (isFirst) {
-      isFirst = false;
+  State<KakaoAddressWidget> createState() => _KakaoAddressWidgetState();
+}
 
-      // ignore: undefined_prefixed_name
-      ui.platformViewRegistry.registerViewFactory(
-        'div-kpostal_layer',
-        (int viewId) {
-          final divElementLocal = html.DivElement();
-          divElementLocal.id = 'kpostal_layer';
-          divElementLocal.style.display = 'none';
-          divElementLocal.style.position = 'fixed';
-          divElementLocal.style.overflow = 'hidden';
-          divElementLocal.style.zIndex = '1';
+class _KakaoAddressWidgetState extends State<KakaoAddressWidget> {
+  html.DivElement? divElement;
 
-          divElement = divElementLocal;
-          return divElementLocal;
-        },
-      );
+  Timer? timer;
 
-      Future.delayed(Duration(seconds: 1),()async{
-        final jsUtil = JsUtil();
-        await jsUtil.importUrl(
-            url:
-            '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js');
+  @override
+  void initState() {
+    super.initState();
 
-        try {
-          js.setProperty(
-              js.globalThis, 'onSelectAddress', js.allowInterop(onComplete));
-        } catch (e) {}
-        const jsCode = '''
+    // ignore: undefined_prefixed_name
+    ui.platformViewRegistry.registerViewFactory(
+      'div-kpostal_layer',
+      (int viewId) {
+        final divElementLocal = html.DivElement();
+        divElementLocal.id = 'kpostal_layer';
+        divElementLocal.style.display = 'none';
+        divElementLocal.style.position = 'fixed';
+        divElementLocal.style.overflow = 'hidden';
+        divElementLocal.style.zIndex = '1';
+
+        divElement = divElementLocal;
+        return divElementLocal;
+      },
+    );
+
+    timer = Timer(const Duration(seconds: 1), () async {
+      final jsUtil = JsUtil();
+      await jsUtil.importUrl(
+          url: '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js');
+
+      try {
+        js.setProperty(
+            js.globalThis, 'onSelectAddress', js.allowInterop(onComplete));
+      } catch (e) {}
+      const jsCode = '''
   var element_layer = document.getElementById('kpostal_layer');
   function showDaumPostCode() {
       new daum.Postcode({
@@ -67,20 +73,25 @@ class KakaoAddressWidget extends StatelessWidget {
       element_layer.style.display = 'block';
   }
     ''';
-        jsUtil.eval(jsCode);
-        jsUtil.call(methodName: 'showDaumPostCode');
-
-
-      });
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-
-      });
-    }
-    return HtmlElementView(viewType: 'div-kpostal_layer');
+      jsUtil.eval(jsCode);
+      jsUtil.call(methodName: 'showDaumPostCode');
+    });
   }
 
-  void onCompleteLocal(dynamic data) {
-    onClose();
-    onComplete(KakaoAddress.fromJson(js.dartify(data) as Map));
+  @override
+  void dispose() {
+    timer?.cancel();
+    timer = null;
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const HtmlElementView(viewType: 'div-kpostal_layer');
+  }
+
+  void onComplete(dynamic data) {
+    widget.onClose();
+    widget.onComplete(KakaoAddress.fromJson(js.dartify(data) as Map));
   }
 }
