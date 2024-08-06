@@ -1,6 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
 
-import 'package:kpostal_web/kpostal_web.dart';
 
 void main() {
   // test('adds one to input values', () {

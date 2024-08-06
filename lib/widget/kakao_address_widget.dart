@@ -6,9 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:js/js_util.dart' as js;
 import 'package:kpostal_web/model/kakao_address.dart';
 import 'package:kpostal_web/util/js_util.dart';
-import 'package:uuid/v1.dart';
-import 'package:uuid/v4.dart';
-
 class KakaoAddressWidget extends StatefulWidget {
   final ValueChanged<KakaoAddress> onComplete;
   final VoidCallback onClose;
