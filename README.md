@@ -1,3 +1,11 @@
+# 다음 오류를 해결하기 위해 포크했습니다.
+```
+../../../../.pub-cache/hosted/pub.dev/kpostal_web-0.0.6/lib/widget/kakao_address_widget.dart:34:8: Error: Undefined name 'platformViewRegistry'.
+kakao_address_widget.dart:34
+    ui.platformViewRegistry.registerViewFactory(
+       ^^^^^^^^^^^^^^^^^^^^
+```
+
 # About kpostal_web
 
 "kpostal_web" was created inspired by "kpostal."
