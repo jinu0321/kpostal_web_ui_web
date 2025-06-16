@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:html' as html;
-import 'dart:ui' as ui;
+import 'dart:ui_web' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:js/js_util.dart' as js;
 import 'package:kpostal_web/model/kakao_address.dart';
 import 'package:kpostal_web/util/js_util.dart';
+
 class KakaoAddressWidget extends StatefulWidget {
   final ValueChanged<KakaoAddress> onComplete;
   final VoidCallback onClose;
@@ -30,29 +31,32 @@ class _KakaoAddressWidgetState extends State<KakaoAddressWidget> {
     super.initState();
 
     // ignore: undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory(
-      'div-kpostal_layer',
-      (int viewId) {
-        final divElementLocal = html.DivElement();
-        divElementLocal.id = 'kpostal_layer';
-        divElementLocal.style.display = 'none';
-        divElementLocal.style.position = 'fixed';
-        divElementLocal.style.overflow = 'hidden';
-        divElementLocal.style.zIndex = '1';
+    ui.platformViewRegistry.registerViewFactory('div-kpostal_layer', (
+      int viewId,
+    ) {
+      final divElementLocal = html.DivElement();
+      divElementLocal.id = 'kpostal_layer';
+      divElementLocal.style.display = 'none';
+      divElementLocal.style.position = 'fixed';
+      divElementLocal.style.overflow = 'hidden';
+      divElementLocal.style.zIndex = '1';
 
-        divElement = divElementLocal;
-        return divElementLocal;
-      },
-    );
+      divElement = divElementLocal;
+      return divElementLocal;
+    });
 
     timer = Timer(const Duration(seconds: 1), () async {
       final jsUtil = JsUtil();
       await jsUtil.importUrl(
-          url: '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js');
+        url: '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js',
+      );
 
       try {
         js.setProperty(
-            js.globalThis, 'onSelectAddress', js.allowInterop(onComplete));
+          js.globalThis,
+          'onSelectAddress',
+          js.allowInterop(onComplete),
+        );
       } catch (e) {}
       const jsCode = '''
   var element_layer = document.getElementById('kpostal_layer');
