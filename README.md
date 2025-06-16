@@ -6,6 +6,12 @@ kakao_address_widget.dart:34
        ^^^^^^^^^^^^^^^^^^^^
 ```
 
+# 변경사항
+lib/widget/kakao_address_widget.dart
+```
+line3: import 'dart:ui' as ui; -> import 'dart:ui_web' as ui;
+```
+
 # About kpostal_web
 
 "kpostal_web" was created inspired by "kpostal."
